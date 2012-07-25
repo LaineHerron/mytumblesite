@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{%- block topbar -%}
+<div class="topbar" data-dropdown="dropdown">
+  <div class="fill">
+    <div class="container">
+      <h2>
+           <a href="{{ url_for('admin.index') }}" class="brand">My Tumblelog Admin</a>
+      </h2>
+      <ul class="nav secondary-nav">
+        <li class="menu">
+           <a href="{{ url_for("admin.create") }}" class="btn primary">Create new post</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+{%- endblock -%}

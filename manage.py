@@ -17,32 +17,47 @@ def make_initial_posts():
                         content="Yay, I'm first!", comments=[comment])
     post.save()
 
-
 # Specify and get command line arguments
 
 parser = argparse.ArgumentParser()
-parser.add_argument('command', type=str,
+parser.add_argument("-s", "--server", type=str,
+                    help="specify web server host, defaults to localhost",
+                    default="localhost")
+parser.add_argument("-p", "--port", type=int,
+                    help="specify web server port, defaults to 8080",
+                    default=8080)
+parser.add_argument("-r", "--rsname", type=str,
+                    help="specify mongodb replica set name. Default is single server")
+parser.add_argument("command", type=str,
                     help="specify 'runserver' to start the server")
-parser.add_argument('-host', type=str,
-                    help='specify server host, defaults to localhost')
-parser.add_argument('-port', type=int,
-                    help='specify server port, defaults to 8080')
-parser.add_argument('-mongo_host', type=str,
-                    help='specify MongoDB host, defaults to localhost')
-parser.add_argument('-mongo_port', type=int,
-                    help='specify MongoDB port, defaults to 27017')
+parser.add_argument("hosts", nargs=argparse.REMAINDER,
+                    help="specify mongodb seed list of the form host:port")
 args = parser.parse_args()
 
-# Use command line arguments / run servers
-
-host = (args.host if args.host else 'localhost')
-port = (args.port if args.port else 8080)
-mongo_host = (args.mongo_host if args.mongo_host else 'localhost')
-mongo_port = (args.mongo_port if args.mongo_port else 27017)
-
-if args.command == 'runserver':
-    mongoengine.connect('mytumblelog(%s)' % str(random.randint(1,
-                        9999)))
+if args.rsname:
+    rsname = args.rsname
+    users = True
+else:
+    users = False
+    
+hostportlist = args.hosts
+    
+if args.command == "runserver":
+    dbname = 'mytumblelog(%s)'%str(random.randint(1,9999))    
+    if users:
+        connectstr = 'mongodb://%(hostport)s/%(db)s?replicaSet=%(rs)s' % \
+                     {'hostport': join(hostportlist,','), 'db':dbname, 'rs':rsname}
+    else:
+        if len(hostportlist) > 1:
+            raise Exception("List of hosts not supported when not using replica set")
+        if len(hostportlist) > 0:
+            connectstr = 'mongodb://%(hostport)s/%(db)s' % \
+                        {'hostport':hostportlist[0], 'db':dbname}
+        else:
+            connectstr = 'mongodb://localhost:27017/%(db)s' % \
+                        {'db':dbname}
+    print connectstr
+    mongoengine.connect(dbname, host=connectstr)
     make_initial_posts()
-    run(host='localhost', port=8080)
+    run(host=args.server, port=args.port)
 

@@ -1,0 +1,23 @@
+<!--current_user, message-->
+%rebase templates/header.html current_user=current_user
+
+<form method="POST">
+  <h1> Sign in: </h1><br />
+  username: <input type="text" name="username" placeholder="Enter username"/><br />
+  password: <input type="password" name="password" /><br />
+  <input type="submit" name="button" class="btn primary" value="Sign in" />
+</form>
+
+<hr>
+<form method="POST">
+  <h1> or Create account: </h1><br />
+  username: <input type="text" name="new_username" placeholder="Enter username"/><br />
+  password: <input type="password" name="new_password1" /><br />
+  password (again): <input type="password" name="new_password2" /><br />
+  <input type="submit" name="button" class="btn primary" value="Create account" />
+</form>
+
+%if message:
+  <b>{{ message }}</b>
+%end
+

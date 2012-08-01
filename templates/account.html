@@ -1,0 +1,20 @@
+<!--current_user, message-->
+%rebase templates/header.html current_user=current_user
+
+<form method="POST">
+  username: <input type="text" name="username" value={{ current_user.username }} readonly/><br />
+  First name: <input type="text" name="first_name" value={{ current_user.first_name }} /><br />
+  Last name: <input type="text" name="last_name" value={{ current_user.last_name }} /><br />
+  email: <input type="text" name="email" value={{ current_user.email }} /><br />
+  current password: <input type="password" name="current_password"/><br />
+  new password: <input type="password" name="new_password1"/><br />
+  new password (again): <input type="password" name="new_password2"/><br />
+  <input type="submit" name="button" class="btn primary" value="Update info" />
+  <hr>
+  <input type="submit" name="button" class="btn primary" value="Sign out">
+</form>
+
+%if not message==None:
+  <b>{{ message }}</b>
+%end
+

@@ -1,0 +1,40 @@
+<!--current_user, posts, show_post-->
+%rebase templates/header.html current_user=current_user
+
+%if show_post:
+  <form method="POST">
+    <input type="text" name="post_title" placeholder="Post Title"><br />
+    <textarea name="post_content" placeholder="Enter post here." cols=40 rows=6></textarea><br />
+    <input type="submit" name="post_submit" class="btn primary" value="Submit">
+  </form>
+  <hr>
+%end
+
+%for post in posts:
+  <div class="page-header">
+    <h1><a href="/post/{{ post.author.username }}/{{ post.title }}">{{ post.title }}</a></h1>
+  </div>
+  <p>{{ post.content }}<p>
+  <p>{{ post.created_at.strftime('%H:%M %Y-%m-%d') }}</p>
+  <p><strong><a href="/user/{{ post.author.username }}">{{ post.author.username }}</a></strong> <small>on {{ post.created_at.strftime('%H:%M %Y-%m-%d') }}</small></p>
+  <h2>Comments</h2>
+  %if post.comments:
+    %for comment in post.comments:
+       <p>{{ comment.content }}</p>
+       <p><strong><a href="/user/{{ comment.author.username }}">{{ comment.author.username }}</a></strong> <small>on {{ comment.created_at.strftime('%H:%M %Y-%m-%d') }}</small></p>
+    %end
+  %else:
+    <p> No comments. </p>
+  %end
+%end
+
+%if show_comment:
+  <hr>
+  <h2>Add a comment</h2>
+  <form method="POST">
+    <div class="actions">
+      <textarea name="comment_area" placeholder="Enter comment here." cols=40 rows=6></textarea><br />
+      <input type="submit" name="comment_button" class="btn primary" value="comment">
+    </div>
+  </form>
+%end

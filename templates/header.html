@@ -1,0 +1,48 @@
+<!--current_user-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>My Tumblelog</title>
+    <link href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.css" rel="stylesheet">
+    <style>.content {padding-top: 80px;}</style>
+  </head>
+
+  <body>
+
+    <div class="topbar">
+      <div class="fill">
+        <div class="container">
+          <h2>
+            <a href="/" class="brand">My Tumblelog</a> <small>Starring MongoDB, MongoEngine and Python 3</small>
+            %if current_user==None:
+              <ul class="nav secondary-nav">
+                <a href="/sign_in" class="btn primary">Sign in</a>
+              </ul>
+            %else:
+              <ul class="nav secondary-nav">
+                <small>Signed in as {{ current_user.username }}</small>
+              </ul>
+              <ul class="nav secondary-nav">
+                <a href="/user/{{ current_user.username }}" class="btn primary">Create new post</a>
+              </ul>
+              <ul class="nav secondary-nav">
+                <a href="/account" class="btn primary">Account</a>
+              </ul>
+            %end
+
+          </h2>
+      
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="content">
+        %include
+      </div>
+    </div>
+  </body>
+</html>
+
+

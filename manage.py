@@ -42,7 +42,7 @@ else:
 hostportlist = args.hosts
     
 if args.command == "runserver":
-    dbname = 'mytumblelog(%s)'%str(random.randint(1,9999))    
+    dbname = 'mytumblelog(%s)'    
     if users:
         connectstr = 'mongodb://%(hostport)s/%(db)s?replicaSet=%(rs)s' % \
                      {'hostport': join(hostportlist,','), 'db':dbname, 'rs':rsname}
@@ -55,7 +55,7 @@ if args.command == "runserver":
         else:
             connectstr = 'mongodb://localhost:27017/%(db)s' % \
                         {'db':dbname}
-    print connectstr
+    print(connectstr)
     mongoengine.connect(dbname, host=connectstr)
     make_initial_posts()
     run(host=args.server, port=args.port)

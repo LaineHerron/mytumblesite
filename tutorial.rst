@@ -57,31 +57,48 @@ Next add an empty file named 'manage.py' to the tumblelog directory.  manage.py 
        pass
 
    # Specify and get command line arguments
-
+   
    parser = argparse.ArgumentParser()
-   parser.add_argument('command', type=str,
+   parser.add_argument("-s", "--server", type=str,
+                       help="specify web server host, defaults to localhost",
+                       default="localhost")
+   parser.add_argument("-p", "--port", type=int,
+                       help="specify web server port, defaults to 8080",
+                       default=8080)
+   parser.add_argument("-r", "--rsname", type=str,
+                       help="specify mongodb replica set name. Default is single server")
+   parser.add_argument("command", type=str,
                        help="specify 'runserver' to start the server")
-   parser.add_argument('-host', type=str,
-                       help='specify server host, defaults to localhost')
-   parser.add_argument('-port', type=int,
-                       help='specify server port, defaults to 8080')
-   parser.add_argument('-mongo_host', type=str,
-                       help='specify MongoDB host, defaults to localhost')
-   parser.add_argument('-mongo_port', type=int,
-                       help='specify MongoDB port, defaults to 27017')
+   parser.add_argument("hosts", nargs=argparse.REMAINDER,
+                       help="specify mongodb seed list of the form host:port")
    args = parser.parse_args()
-
-   # Use command line arguments / run servers
-
-   host = (args.host if args.host else 'localhost')
-   port = (args.port if args.port else 8080)
-   mongo_host = (args.mongo_host if args.mongo_host else 'localhost')
-   mongo_port = (args.mongo_port if args.mongo_port else 27017)
-
-   if args.command == 'runserver':
-       mongoengine.connect('mytumblelog',host=mongo_host, port=mongo_port)
+   
+   if args.rsname:
+       rsname = args.rsname
+       users = True
+   else:
+       users = False
+   
+   hostportlist = args.hosts
+   
+   if args.command == "runserver":
+       dbname = 'mytumblelog(%s)'    
+       if users:
+           connectstr = 'mongodb://%(hostport)s/%(db)s?replicaSet=%(rs)s' % \
+                        {'hostport': join(hostportlist,','), 'db':dbname, 'rs':rsname}
+       else:
+           if len(hostportlist) > 1:
+               raise Exception("List of hosts not supported when not using replica set")
+           if len(hostportlist) > 0:
+               connectstr = 'mongodb://%(hostport)s/%(db)s' % \
+                           {'hostport':hostportlist[0], 'db':dbname}
+           else:
+               connectstr = 'mongodb://localhost:27017/%(db)s' % \
+                           {'db':dbname}
+       print(connectstr)
+       mongoengine.connect(dbname, host=connectstr)
        make_initial_posts()
-       run(host=host, port=port)
+       run(host=args.server, port=args.port)
 
 
 You can now run a simple test server.  Begin by running a 'mongod' instance with its default settings (host=localhost, port=27017), then start the web site server by executing the following command:
@@ -164,35 +181,52 @@ Next we will uncomment the line 'import models' in manage.py, then add a few ini
    # Specify and get command line arguments
 
    parser = argparse.ArgumentParser()
-   parser.add_argument('command', type=str,
+   parser.add_argument("-s", "--server", type=str,
+                       help="specify web server host, defaults to localhost",
+                       default="localhost")
+   parser.add_argument("-p", "--port", type=int,
+                       help="specify web server port, defaults to 8080",
+                       default=8080)
+   parser.add_argument("-r", "--rsname", type=str,
+                       help="specify mongodb replica set name. Default is single server")
+   parser.add_argument("command", type=str,
                        help="specify 'runserver' to start the server")
-   parser.add_argument('-host', type=str,
-                       help='specify server host, defaults to localhost')
-   parser.add_argument('-port', type=int,
-                       help='specify server port, defaults to 8080')
-   parser.add_argument('-mongo_host', type=str,
-                       help='specify MongoDB host, defaults to localhost')
-   parser.add_argument('-mongo_port', type=int,
-                       help='specify MongoDB port, defaults to 27017')
+   parser.add_argument("hosts", nargs=argparse.REMAINDER,
+                       help="specify mongodb seed list of the form host:port")
    args = parser.parse_args()
-
-   # Use command line arguments / run servers
-
-   host = (args.host if args.host else 'localhost')
-   port = (args.port if args.port else 8080)
-   mongo_host = (args.mongo_host if args.mongo_host else 'localhost')
-   mongo_port = (args.mongo_port if args.mongo_port else 27017)
-
-   if args.command == 'runserver':
-       mongoengine.connect('mytumblelog',host=mongo_host, port=mongo_port)
+   
+   if args.rsname:
+       rsname = args.rsname
+       users = True
+   else:
+       users = False
+   
+   hostportlist = args.hosts
+   
+   if args.command == "runserver":
+       dbname = 'mytumblelog(%s)'    
+       if users:
+           connectstr = 'mongodb://%(hostport)s/%(db)s?replicaSet=%(rs)s' % \
+                        {'hostport': join(hostportlist,','), 'db':dbname, 'rs':rsname}
+       else:
+           if len(hostportlist) > 1:
+               raise Exception("List of hosts not supported when not using replica set")
+           if len(hostportlist) > 0:
+               connectstr = 'mongodb://%(hostport)s/%(db)s' % \
+                           {'hostport':hostportlist[0], 'db':dbname}
+           else:
+               connectstr = 'mongodb://localhost:27017/%(db)s' % \
+                           {'db':dbname}
+       print(connectstr)
+       mongoengine.connect(dbname, host=connectstr)
        make_initial_posts()
-       run(host=host, port=port)
+       run(host=args.server, port=args.port)
 
 
 Add HTML Templates
 ------------------
 
-In this step we will add HTML templates for our website.  We will have one template as header, and three others for main page, sign in page, and account information page. make a new directory within the tumblelog directory and name it templates.  populate template with the following files:
+In this step we will add HTML templates for our website.  We will have one template as header, and three others for main page, sign in page, and account information page. make a new directory within the tumblelog directory and name it "templates".  populate templates with the following files:
 
 tumblelog/templates/header.html
 
@@ -337,12 +371,12 @@ tumblelog/templates/account.html
      <b>{{ message }}</b>
    %end
 
-Open these file in your browser to get an ida of what the site will look like.  You should see multiple lines of text starting with '%'.  These lines represent embedded python code that will be executed by bottle.py
+Open these file in your browser to get an idea of what the site will look like.  You should see multiple lines of text starting with '%'.  These lines represent embedded python code that will be executed by bottle.py
 
 Add Routings
 ------------
 
-Now create a new file in the 'tumblelog' directory and call it routings.py.  routings.py will contain instructions for what to do when a user visits different pages on your site, such as which HTML template to use.  Add the following to the new file, /tumblelog/routings.py:
+Now create a new file in the 'tumblelog' directory and call it routings.py.  routings.py will contain instructions for what to do when a user visits different pages on your site, including which HTML template to use.  Add the following to the new file, /tumblelog/routings.py:
 
 .. code-block:: python
 

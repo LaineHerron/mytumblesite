@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="Docutils 0.10: http://docutils.sourceforge.net/" />
+<title>Write a Tumblelog Application with Python 3, Bottle and MongoEngine</title>
+<style type="text/css">
+
+/*
+:Author: David Goodger (goodger@python.org)
+:Id: $Id$
+:Copyright: This stylesheet has been placed in the public domain.
+
+Default cascading style sheet for the HTML output of Docutils.
+
+See http://docutils.sf.net/docs/howto/html-stylesheets.html for how to
+customize this style sheet.
+*/
+
+/* used to remove borders from tables and images */
+.borderless, table.borderless td, table.borderless th {
+  border: 0 }
+
+table.borderless td, table.borderless th {
+  /* Override padding for "table.docutils td" with "! important".
+     The right padding separates the table cells. */
+  padding: 0 0.5em 0 0 ! important }
+
+.first {
+  /* Override more specific margin styles with "! important". */
+  margin-top: 0 ! important }
+
+.last, .with-subtitle {
+  margin-bottom: 0 ! important }
+
+.hidden {
+  display: none }
+
+a.toc-backref {
+  text-decoration: none ;
+  color: black }
+
+blockquote.epigraph {
+  margin: 2em 5em ; }
+
+dl.docutils dd {
+  margin-bottom: 0.5em }
+
+object[type="image/svg+xml"], object[type="application/x-shockwave-flash"] {
+  overflow: hidden;
+}
+
+/* Uncomment (and remove this text!) to get bold-faced definition list terms
+dl.docutils dt {
+  font-weight: bold }
+*/
+
+div.abstract {
+  margin: 2em 5em }
+
+div.abstract p.topic-title {
+  font-weight: bold ;
+  text-align: center }
+
+div.admonition, div.attention, div.caution, div.danger, div.error,
+div.hint, div.important, div.note, div.tip, div.warning {
+  margin: 2em ;
+  border: medium outset ;
+  padding: 1em }
+
+div.admonition p.admonition-title, div.hint p.admonition-title,
+div.important p.admonition-title, div.note p.admonition-title,
+div.tip p.admonition-title {
+  font-weight: bold ;
+  font-family: sans-serif }
+
+div.attention p.admonition-title, div.caution p.admonition-title,
+div.danger p.admonition-title, div.error p.admonition-title,
+div.warning p.admonition-title {
+  color: red ;
+  font-weight: bold ;
+  font-family: sans-serif }
+
+/* Uncomment (and remove this text!) to get reduced vertical space in
+   compound paragraphs.
+div.compound .compound-first, div.compound .compound-middle {
+  margin-bottom: 0.5em }
+
+div.compound .compound-last, div.compound .compound-middle {
+  margin-top: 0.5em }
+*/
+
+div.dedication {
+  margin: 2em 5em ;
+  text-align: center ;
+  font-style: italic }
+
+div.dedication p.topic-title {
+  font-weight: bold ;
+  font-style: normal }
+
+div.figure {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+div.footer, div.header {
+  clear: both;
+  font-size: smaller }
+
+div.line-block {
+  display: block ;
+  margin-top: 1em ;
+  margin-bottom: 1em }
+
+div.line-block div.line-block {
+  margin-top: 0 ;
+  margin-bottom: 0 ;
+  margin-left: 1.5em }
+
+div.sidebar {
+  margin: 0 0 0.5em 1em ;
+  border: medium outset ;
+  padding: 1em ;
+  background-color: #ffffee ;
+  width: 40% ;
+  float: right ;
+  clear: right }
+
+div.sidebar p.rubric {
+  font-family: sans-serif ;
+  font-size: medium }
+
+div.system-messages {
+  margin: 5em }
+
+div.system-messages h1 {
+  color: red }
+
+div.system-message {
+  border: medium outset ;
+  padding: 1em }
+
+div.system-message p.system-message-title {
+  color: red ;
+  font-weight: bold }
+
+div.topic {
+  margin: 2em }
+
+h1.section-subtitle, h2.section-subtitle, h3.section-subtitle,
+h4.section-subtitle, h5.section-subtitle, h6.section-subtitle {
+  margin-top: 0.4em }
+
+h1.title {
+  text-align: center }
+
+h2.subtitle {
+  text-align: center }
+
+hr.docutils {
+  width: 75% }
+
+img.align-left, .figure.align-left, object.align-left {
+  clear: left ;
+  float: left ;
+  margin-right: 1em }
+
+img.align-right, .figure.align-right, object.align-right {
+  clear: right ;
+  float: right ;
+  margin-left: 1em }
+
+img.align-center, .figure.align-center, object.align-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.align-left {
+  text-align: left }
+
+.align-center {
+  clear: both ;
+  text-align: center }
+
+.align-right {
+  text-align: right }
+
+/* reset inner alignment in figures */
+div.align-right {
+  text-align: inherit }
+
+/* div.align-center * { */
+/*   text-align: left } */
+
+ol.simple, ul.simple {
+  margin-bottom: 1em }
+
+ol.arabic {
+  list-style: decimal }
+
+ol.loweralpha {
+  list-style: lower-alpha }
+
+ol.upperalpha {
+  list-style: upper-alpha }
+
+ol.lowerroman {
+  list-style: lower-roman }
+
+ol.upperroman {
+  list-style: upper-roman }
+
+p.attribution {
+  text-align: right ;
+  margin-left: 50% }
+
+p.caption {
+  font-style: italic }
+
+p.credits {
+  font-style: italic ;
+  font-size: smaller }
+
+p.label {
+  white-space: nowrap }
+
+p.rubric {
+  font-weight: bold ;
+  font-size: larger ;
+  color: maroon ;
+  text-align: center }
+
+p.sidebar-title {
+  font-family: sans-serif ;
+  font-weight: bold ;
+  font-size: larger }
+
+p.sidebar-subtitle {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+p.topic-title {
+  font-weight: bold }
+
+pre.address {
+  margin-bottom: 0 ;
+  margin-top: 0 ;
+  font: inherit }
+
+pre.literal-block, pre.doctest-block, pre.math, pre.code {
+  margin-left: 2em ;
+  margin-right: 2em }
+
+pre.code .ln { /* line numbers */
+  color: grey;
+}
+
+.code {
+  background-color: #eeeeee
+}
+
+span.classifier {
+  font-family: sans-serif ;
+  font-style: oblique }
+
+span.classifier-delimiter {
+  font-family: sans-serif ;
+  font-weight: bold }
+
+span.interpreted {
+  font-family: sans-serif }
+
+span.option {
+  white-space: nowrap }
+
+span.pre {
+  white-space: pre }
+
+span.problematic {
+  color: red }
+
+span.section-subtitle {
+  /* font-size relative to parent (h1..h6 element) */
+  font-size: 80% }
+
+table.citation {
+  border-left: solid 1px gray;
+  margin-left: 1px }
+
+table.docinfo {
+  margin: 2em 4em }
+
+table.docutils {
+  margin-top: 0.5em ;
+  margin-bottom: 0.5em }
+
+table.footnote {
+  border-left: solid 1px black;
+  margin-left: 1px }
+
+table.docutils td, table.docutils th,
+table.docinfo td, table.docinfo th {
+  padding-left: 0.5em ;
+  padding-right: 0.5em ;
+  vertical-align: top }
+
+table.docutils th.field-name, table.docinfo th.docinfo-name {
+  font-weight: bold ;
+  text-align: left ;
+  white-space: nowrap ;
+  padding-left: 0 }
+
+h1 tt.docutils, h2 tt.docutils, h3 tt.docutils,
+h4 tt.docutils, h5 tt.docutils, h6 tt.docutils {
+  font-size: 100% }
+
+ul.auto-toc {
+  list-style-type: none }
+
+</style>
+</head>
+<body>
+<div class="document" id="write-a-tumblelog-application-with-python-3-bottle-and-mongoengine">
+<h1 class="title">Write a Tumblelog Application with Python 3, Bottle and MongoEngine</h1>
+
+<div class="section" id="introduction">
+<h1>Introduction</h1>
+<p>This tutorial describes how to make a simple tumblelog application using Python 3, the lightweight <a class="reference external" href="http://bottlepy.org/">Bottle</a> Python web-framework, and <a class="reference external" href="http://mongoengine.org/">MongoEngine</a>.</p>
+<div class="admonition-where-to-get-help admonition">
+<p class="first admonition-title">Where to get help</p>
+<p class="last">If you're having trouble going through this tutorial, please post
+a message to <a class="reference external" href="http://groups.google.com/group/mongodb-user">mongodb-user</a> or join the IRC chat in <em>#mongodb</em> on
+<a class="reference external" href="http://freenode.net/">irc.freenode.net</a> to chat with other MongoDB users who might be
+able to help.</p>
+</div>
+</div>
+<div class="section" id="prerequesite">
+<h1>Prerequesite</h1>
+<p>This tutorial assumes you have installed Python 3, MongoDB, and MongoEngine</p>
+<ul class="simple">
+<li><a class="reference external" href="http://www.python.org/getit/releases/3.2.3/">installing Python 3</a></li>
+<li><a class="reference external" href="http://www.mongodb.org/display/DOCS/Quickstart">installing MongoDB</a></li>
+<li><a class="reference external" href="http://mongoengine.org">installing Mongoengine</a></li>
+</ul>
+</div>
+<div class="section" id="getting-started">
+<h1>Getting Started</h1>
+<p>Begin by creating an empty directory named 'tumblelog', which you will use to hold the project.  Download bottle.py into this directory by navigating terminal to 'tumblelog' and executing the following command:</p>
+<pre class="code bash literal-block">
+curl -O https://raw.github.com/defnull/bottle/master/bottle.py
+</pre>
+<p>Next add an empty file named 'manage.py' to the tumblelog directory.  manage.py will be used to as an interface to start the web server.  Paste the following code into manage.py:</p>
+<pre class="code python literal-block">
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">mongoengine</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="c">#import models</span>
+<span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">run</span>
+<span class="c">#import routings</span>
+
+
+<span class="k">def</span> <span class="nf">make_initial_posts</span><span class="p">():</span>
+    <span class="k">pass</span>
+
+<span class="c"># Specify and get command line arguments</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-s&quot;</span><span class="p">,</span> <span class="s">&quot;--server&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify web server host, defaults to localhost&quot;</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="s">&quot;localhost&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-p&quot;</span><span class="p">,</span> <span class="s">&quot;--port&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify web server port, defaults to 8080&quot;</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-r&quot;</span><span class="p">,</span> <span class="s">&quot;--rsname&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify mongodb replica set name. Default is single server&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;command&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify 'runserver' to start the server&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;hosts&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">REMAINDER</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify mongodb seed list of the form host:port&quot;</span><span class="p">)</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">rsname</span><span class="p">:</span>
+    <span class="n">rsname</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">rsname</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="n">hostportlist</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">hosts</span>
+
+<span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s">&quot;runserver&quot;</span><span class="p">:</span>
+    <span class="n">dbname</span> <span class="o">=</span> <span class="s">'mytumblelog(</span><span class="si">%s</span><span class="s">)'</span>
+    <span class="k">if</span> <span class="n">users</span><span class="p">:</span>
+        <span class="n">connectstr</span> <span class="o">=</span> <span class="s">'mongodb://</span><span class="si">%(hostport)s</span><span class="s">/</span><span class="si">%(db)s</span><span class="s">?replicaSet=</span><span class="si">%(rs)s</span><span class="s">'</span> <span class="o">%</span> \
+                     <span class="p">{</span><span class="s">'hostport'</span><span class="p">:</span> <span class="n">join</span><span class="p">(</span><span class="n">hostportlist</span><span class="p">,</span><span class="s">','</span><span class="p">),</span> <span class="s">'db'</span><span class="p">:</span><span class="n">dbname</span><span class="p">,</span> <span class="s">'rs'</span><span class="p">:</span><span class="n">rsname</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hostportlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;List of hosts not supported when not using replica set&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hostportlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">connectstr</span> <span class="o">=</span> <span class="s">'mongodb://</span><span class="si">%(hostport)s</span><span class="s">/</span><span class="si">%(db)s</span><span class="s">'</span> <span class="o">%</span> \
+                        <span class="p">{</span><span class="s">'hostport'</span><span class="p">:</span><span class="n">hostportlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">'db'</span><span class="p">:</span><span class="n">dbname</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">connectstr</span> <span class="o">=</span> <span class="s">'mongodb://localhost:27017/</span><span class="si">%(db)s</span><span class="s">'</span> <span class="o">%</span> \
+                        <span class="p">{</span><span class="s">'db'</span><span class="p">:</span><span class="n">dbname</span><span class="p">}</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">connectstr</span><span class="p">)</span>
+    <span class="n">mongoengine</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">dbname</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">connectstr</span><span class="p">)</span>
+    <span class="n">make_initial_posts</span><span class="p">()</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+</pre>
+<p>You can now run a simple test server.  Begin by running a 'mongod' instance with its default settings (host=localhost, port=27017), then start the web site server by executing the following command:</p>
+<pre class="code bash literal-block">
+python3.2 manage.py runserver
+</pre>
+<p>There should be no errors, and you can visit <a class="reference external" href="http://localhost:8080/">http://localhost:8080/</a> in your browser to view a page with a &quot;404&quot; message.</p>
+</div>
+<div class="section" id="define-the-schema">
+<h1>Define the Schema</h1>
+<p>Next define &quot;models&quot; or in MongoDB's terminology, &quot;documents&quot;.  In this application, you will define the documents for Post, Comment, and User.  Each Post will contain a list of Comments.  Posts and Comments will have a User specified as their author.  Paste the following code into a new file /tumblelog/models.py:</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">mongoengine</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+
+
+<span class="k">class</span> <span class="nc">User</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+
+    <span class="n">username</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">first_name</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">last_name</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+    <span class="n">email</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+
+
+<span class="k">class</span> <span class="nc">Comment</span><span class="p">(</span><span class="n">EmbeddedDocument</span><span class="p">):</span>
+
+    <span class="n">author</span> <span class="o">=</span> <span class="n">ReferenceField</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">120</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">,</span>
+                               <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span><span class="s">'ordering'</span><span class="p">:</span> <span class="p">[</span><span class="s">'-created_at'</span><span class="p">]}</span>
+
+
+<span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">Document</span><span class="p">):</span>
+
+    <span class="n">author</span> <span class="o">=</span> <span class="n">ReferenceField</span><span class="p">(</span><span class="n">User</span><span class="p">)</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">max_length</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+    <span class="n">content</span> <span class="o">=</span> <span class="n">StringField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">120</span><span class="p">)</span>
+    <span class="n">comments</span> <span class="o">=</span> <span class="n">ListField</span><span class="p">(</span><span class="n">EmbeddedDocumentField</span><span class="p">(</span><span class="n">Comment</span><span class="p">))</span>
+    <span class="n">created_at</span> <span class="o">=</span> <span class="n">DateTimeField</span><span class="p">(</span><span class="n">default</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">,</span>
+                               <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">meta</span> <span class="o">=</span> <span class="p">{</span><span class="s">'ordering'</span><span class="p">:</span> <span class="p">[</span><span class="s">'-created_at'</span><span class="p">]}</span>
+
+
+<span class="n">current_user</span> <span class="o">=</span> <span class="bp">None</span>
+</pre>
+</div>
+<div class="section" id="add-initial-data">
+<h1>Add Initial Data</h1>
+<p>Next we will uncomment the line 'import models' in manage.py, then add a few initial posts and comments.  Complete the 'make_initial_posts()' function in manage.py so that the file looks like this:</p>
+<pre class="code python literal-block">
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">mongoengine</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">models</span>
+<span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">run</span>
+<span class="c">#import routings</span>
+
+
+<span class="k">def</span> <span class="nf">make_initial_posts</span><span class="p">():</span>
+    <span class="n">user1</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">'user1'</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s">'password'</span><span class="p">)</span>
+    <span class="n">user1</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="n">user2</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">'user2'</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s">'password'</span><span class="p">)</span>
+    <span class="n">user2</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Comment</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">user2</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="s">'Ready my comment!'</span><span class="p">)</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Post</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">user1</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s">'The First Post'</span><span class="p">,</span>
+                        <span class="n">content</span><span class="o">=</span><span class="s">&quot;Yay, I'm first!&quot;</span><span class="p">,</span> <span class="n">comments</span><span class="o">=</span><span class="p">[</span><span class="n">comment</span><span class="p">])</span>
+    <span class="n">post</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+
+
+<span class="c"># Specify and get command line arguments</span>
+
+<span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">()</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-s&quot;</span><span class="p">,</span> <span class="s">&quot;--server&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify web server host, defaults to localhost&quot;</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="s">&quot;localhost&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-p&quot;</span><span class="p">,</span> <span class="s">&quot;--port&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">int</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify web server port, defaults to 8080&quot;</span><span class="p">,</span>
+                    <span class="n">default</span><span class="o">=</span><span class="mi">8080</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;-r&quot;</span><span class="p">,</span> <span class="s">&quot;--rsname&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify mongodb replica set name. Default is single server&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;command&quot;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify 'runserver' to start the server&quot;</span><span class="p">)</span>
+<span class="n">parser</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s">&quot;hosts&quot;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">REMAINDER</span><span class="p">,</span>
+                    <span class="n">help</span><span class="o">=</span><span class="s">&quot;specify mongodb seed list of the form host:port&quot;</span><span class="p">)</span>
+<span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+
+<span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">rsname</span><span class="p">:</span>
+    <span class="n">rsname</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">rsname</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="bp">True</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">users</span> <span class="o">=</span> <span class="bp">False</span>
+
+<span class="n">hostportlist</span> <span class="o">=</span> <span class="n">args</span><span class="o">.</span><span class="n">hosts</span>
+
+<span class="k">if</span> <span class="n">args</span><span class="o">.</span><span class="n">command</span> <span class="o">==</span> <span class="s">&quot;runserver&quot;</span><span class="p">:</span>
+    <span class="n">dbname</span> <span class="o">=</span> <span class="s">'mytumblelog(</span><span class="si">%s</span><span class="s">)'</span>
+    <span class="k">if</span> <span class="n">users</span><span class="p">:</span>
+        <span class="n">connectstr</span> <span class="o">=</span> <span class="s">'mongodb://</span><span class="si">%(hostport)s</span><span class="s">/</span><span class="si">%(db)s</span><span class="s">?replicaSet=</span><span class="si">%(rs)s</span><span class="s">'</span> <span class="o">%</span> \
+                     <span class="p">{</span><span class="s">'hostport'</span><span class="p">:</span> <span class="n">join</span><span class="p">(</span><span class="n">hostportlist</span><span class="p">,</span><span class="s">','</span><span class="p">),</span> <span class="s">'db'</span><span class="p">:</span><span class="n">dbname</span><span class="p">,</span> <span class="s">'rs'</span><span class="p">:</span><span class="n">rsname</span><span class="p">}</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hostportlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s">&quot;List of hosts not supported when not using replica set&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">hostportlist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">connectstr</span> <span class="o">=</span> <span class="s">'mongodb://</span><span class="si">%(hostport)s</span><span class="s">/</span><span class="si">%(db)s</span><span class="s">'</span> <span class="o">%</span> \
+                        <span class="p">{</span><span class="s">'hostport'</span><span class="p">:</span><span class="n">hostportlist</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s">'db'</span><span class="p">:</span><span class="n">dbname</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">connectstr</span> <span class="o">=</span> <span class="s">'mongodb://localhost:27017/</span><span class="si">%(db)s</span><span class="s">'</span> <span class="o">%</span> \
+                        <span class="p">{</span><span class="s">'db'</span><span class="p">:</span><span class="n">dbname</span><span class="p">}</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">connectstr</span><span class="p">)</span>
+    <span class="n">mongoengine</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">dbname</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="n">connectstr</span><span class="p">)</span>
+    <span class="n">make_initial_posts</span><span class="p">()</span>
+    <span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">server</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">port</span><span class="p">)</span>
+</pre>
+</div>
+<div class="section" id="add-html-templates">
+<h1>Add HTML Templates</h1>
+<p>In this step we will add HTML templates for our website.  We will have one template as header, and three others for main page, sign in page, and account information page. make a new directory within the tumblelog directory and name it &quot;templates&quot;.  populate templates with the following files:</p>
+<p>tumblelog/templates/header.html</p>
+<pre class="code html literal-block">
+<span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="nt">&lt;html</span> <span class="na">lang=</span><span class="s">&quot;en&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;head&gt;</span>
+    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">&quot;utf-8&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;title&gt;</span>My Tumblelog<span class="nt">&lt;/title&gt;</span>
+    <span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">&quot;http://twitter.github.com/bootstrap/1.4.0/bootstrap.css&quot;</span> <span class="na">rel=</span><span class="s">&quot;stylesheet&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;style&gt;</span><span class="nc">.content</span> <span class="p">{</span><span class="k">padding-top</span><span class="o">:</span> <span class="m">80px</span><span class="p">;}</span><span class="nt">&lt;/style&gt;</span>
+  <span class="nt">&lt;/head&gt;</span>
+
+  <span class="nt">&lt;body&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;topbar&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;fill&quot;</span><span class="nt">&gt;</span>
+        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+          <span class="nt">&lt;h2&gt;</span>
+            <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;/&quot;</span> <span class="na">class=</span><span class="s">&quot;brand&quot;</span><span class="nt">&gt;</span>My Tumblelog<span class="nt">&lt;/a&gt;</span> <span class="nt">&lt;small&gt;</span>Starring Bottle, MongoEngine and Python 3<span class="nt">&lt;/small&gt;</span>
+            %if current_user==None:
+              <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&quot;nav secondary-nav&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;/sign_in&quot;</span> <span class="na">class=</span><span class="s">&quot;btn primary&quot;</span><span class="nt">&gt;</span>Sign in<span class="nt">&lt;/a&gt;</span>
+              <span class="nt">&lt;/ul&gt;</span>
+            %else:
+              <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&quot;nav secondary-nav&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;small&gt;</span>Signed in as {{ current_user.username }}<span class="nt">&lt;/small&gt;</span>
+              <span class="nt">&lt;/ul&gt;</span>
+              <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&quot;nav secondary-nav&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;/user/{{ current_user.username }}&quot;</span> <span class="na">class=</span><span class="s">&quot;btn primary&quot;</span><span class="nt">&gt;</span>Create new post<span class="nt">&lt;/a&gt;</span>
+              <span class="nt">&lt;/ul&gt;</span>
+              <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">&quot;nav secondary-nav&quot;</span><span class="nt">&gt;</span>
+                <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">&quot;/account&quot;</span> <span class="na">class=</span><span class="s">&quot;btn primary&quot;</span><span class="nt">&gt;</span>Account<span class="nt">&lt;/a&gt;</span>
+              <span class="nt">&lt;/ul&gt;</span>
+            %end
+
+          <span class="nt">&lt;/h2&gt;</span>
+
+        <span class="nt">&lt;/div&gt;</span>
+      <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;container&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;content&quot;</span><span class="nt">&gt;</span>
+        %include
+      <span class="nt">&lt;/div&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/body&gt;</span>
+<span class="nt">&lt;/html&gt;</span>
+</pre>
+<p>tumblelog/templates/main.html</p>
+<pre class="code html literal-block">
+%rebase templates/header.html current_user=current_user
+
+%if show_post:
+  <span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;post_title&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Post Title&quot;</span><span class="nt">&gt;&lt;br</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">&quot;post_content&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Enter post here.&quot;</span> <span class="na">cols=</span><span class="s">40</span> <span class="na">rows=</span><span class="s">6</span><span class="nt">&gt;&lt;/textarea&gt;&lt;br</span> <span class="nt">/&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">name=</span><span class="s">&quot;post_submit&quot;</span> <span class="na">class=</span><span class="s">&quot;btn primary&quot;</span> <span class="na">value=</span><span class="s">&quot;Submit&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;/form&gt;</span>
+  <span class="nt">&lt;hr&gt;</span>
+%end
+
+%for post in posts:
+  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;page-header&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;h1&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;/post/{{ post.author.username }}/{{ post.title }}&quot;</span><span class="nt">&gt;</span>{{ post.title }}<span class="nt">&lt;/a&gt;&lt;/h1&gt;</span>
+  <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;p&gt;</span>{{ post.content }}<span class="nt">&lt;p&gt;</span>
+  <span class="nt">&lt;p&gt;</span>{{ post.created_at.strftime('%H:%M %Y-%m-%d') }}<span class="nt">&lt;/p&gt;</span>
+  <span class="nt">&lt;p&gt;&lt;strong&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;/user/{{ post.author.username }}&quot;</span><span class="nt">&gt;</span>{{ post.author.username }}<span class="nt">&lt;/a&gt;&lt;/strong&gt;</span> <span class="nt">&lt;small&gt;</span>on {{ post.created_at.strftime('%H:%M %Y-%m-%d') }}<span class="nt">&lt;/small&gt;&lt;/p&gt;</span>
+  <span class="nt">&lt;h2&gt;</span>Comments<span class="nt">&lt;/h2&gt;</span>
+  %if post.comments:
+    %for comment in post.comments:
+       <span class="nt">&lt;p&gt;</span>{{ comment.content }}<span class="nt">&lt;/p&gt;</span>
+       <span class="nt">&lt;p&gt;&lt;strong&gt;&lt;a</span> <span class="na">href=</span><span class="s">&quot;/user/{{ comment.author.username }}&quot;</span><span class="nt">&gt;</span>{{ comment.author.username }}<span class="nt">&lt;/a&gt;&lt;/strong&gt;</span> <span class="nt">&lt;small&gt;</span>on {{ comment.created_at.strftime('%H:%M %Y-%m-%d') }}<span class="nt">&lt;/small&gt;&lt;/p&gt;</span>
+    %end
+  %else:
+    <span class="nt">&lt;p&gt;</span> No comments. <span class="nt">&lt;/p&gt;</span>
+  %end
+%end
+
+%if show_comment:
+  <span class="nt">&lt;hr&gt;</span>
+  <span class="nt">&lt;h2&gt;</span>Add a comment<span class="nt">&lt;/h2&gt;</span>
+  <span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">&quot;actions&quot;</span><span class="nt">&gt;</span>
+      <span class="nt">&lt;textarea</span> <span class="na">name=</span><span class="s">&quot;comment_area&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Enter comment here.&quot;</span> <span class="na">cols=</span><span class="s">40</span> <span class="na">rows=</span><span class="s">6</span><span class="nt">&gt;&lt;/textarea&gt;&lt;br</span> <span class="nt">/&gt;</span>
+      <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">name=</span><span class="s">&quot;comment_button&quot;</span> <span class="na">class=</span><span class="s">&quot;btn primary&quot;</span> <span class="na">value=</span><span class="s">&quot;comment&quot;</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;/div&gt;</span>
+  <span class="nt">&lt;/form&gt;</span>
+%end
+</pre>
+<p>tumblelog/templates/sign_in.html</p>
+<pre class="code html literal-block">
+%rebase templates/header.html current_user=current_user
+
+<span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;h1&gt;</span> Sign in: <span class="nt">&lt;/h1&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  username: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;username&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Enter username&quot;</span><span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  password: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">name=</span><span class="s">&quot;password&quot;</span> <span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">name=</span><span class="s">&quot;button&quot;</span> <span class="na">class=</span><span class="s">&quot;btn primary&quot;</span> <span class="na">value=</span><span class="s">&quot;Sign in&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+
+<span class="nt">&lt;hr&gt;</span>
+<span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;h1&gt;</span> or Create account: <span class="nt">&lt;/h1&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  username: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;new_username&quot;</span> <span class="na">placeholder=</span><span class="s">&quot;Enter username&quot;</span><span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  password: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">name=</span><span class="s">&quot;new_password1&quot;</span> <span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  password (again): <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">name=</span><span class="s">&quot;new_password2&quot;</span> <span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">name=</span><span class="s">&quot;button&quot;</span> <span class="na">class=</span><span class="s">&quot;btn primary&quot;</span> <span class="na">value=</span><span class="s">&quot;Create account&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+
+%if message:
+  <span class="nt">&lt;b&gt;</span>{{ message }}<span class="nt">&lt;/b&gt;</span>
+%end
+</pre>
+<p>tumblelog/templates/account.html</p>
+<pre class="code html literal-block">
+%rebase templates/header.html current_user=current_user
+
+<span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">&quot;POST&quot;</span><span class="nt">&gt;</span>
+  username: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;username&quot;</span> <span class="na">value=</span><span class="s">{{</span> <span class="na">current_user</span><span class="err">.</span><span class="na">username</span> <span class="err">}}</span> <span class="na">readonly</span><span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  First name: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;first_name&quot;</span> <span class="na">value=</span><span class="s">{{</span> <span class="na">current_user</span><span class="err">.</span><span class="na">first_name</span> <span class="err">}}</span> <span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  Last name: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;last_name&quot;</span> <span class="na">value=</span><span class="s">{{</span> <span class="na">current_user</span><span class="err">.</span><span class="na">last_name</span> <span class="err">}}</span> <span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  email: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;text&quot;</span> <span class="na">name=</span><span class="s">&quot;email&quot;</span> <span class="na">value=</span><span class="s">{{</span> <span class="na">current_user</span><span class="err">.</span><span class="na">email</span> <span class="err">}}</span> <span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  current password: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">name=</span><span class="s">&quot;current_password&quot;</span><span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  new password: <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">name=</span><span class="s">&quot;new_password1&quot;</span><span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  new password (again): <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;password&quot;</span> <span class="na">name=</span><span class="s">&quot;new_password2&quot;</span><span class="nt">/&gt;&lt;br</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">name=</span><span class="s">&quot;button&quot;</span> <span class="na">class=</span><span class="s">&quot;btn primary&quot;</span> <span class="na">value=</span><span class="s">&quot;Update info&quot;</span> <span class="nt">/&gt;</span>
+  <span class="nt">&lt;hr&gt;</span>
+  <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">&quot;submit&quot;</span> <span class="na">name=</span><span class="s">&quot;button&quot;</span> <span class="na">class=</span><span class="s">&quot;btn primary&quot;</span> <span class="na">value=</span><span class="s">&quot;Sign out&quot;</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/form&gt;</span>
+
+%if not message==None:
+  <span class="nt">&lt;b&gt;</span>{{ message }}<span class="nt">&lt;/b&gt;</span>
+%end
+</pre>
+<p>Open these file in your browser to get an idea of what the site will look like.  You should see multiple lines of text starting with '%'.  These lines represent embedded python code that will be executed by bottle.py</p>
+</div>
+<div class="section" id="add-routings">
+<h1>Add Routings</h1>
+<p>Now create a new file in the 'tumblelog' directory and call it routings.py.  routings.py will contain instructions for what to do when a user visits different pages on your site, including which HTML template to use.  Add the following to the new file, /tumblelog/routings.py:</p>
+<pre class="code python literal-block">
+<span class="kn">from</span> <span class="nn">bottle</span> <span class="kn">import</span> <span class="n">route</span><span class="p">,</span> <span class="n">post</span><span class="p">,</span> <span class="n">redirect</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">import</span> <span class="nn">models</span>
+
+
+<span class="nd">&#64;route</span><span class="p">(</span><span class="s">'/'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">main_page</span><span class="p">():</span>
+    <span class="k">return</span> <span class="n">template</span><span class="p">(</span><span class="s">'templates/main.html'</span><span class="p">,</span>
+                    <span class="n">current_user</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">current_user</span><span class="p">,</span>
+                    <span class="n">posts</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="p">,</span> <span class="n">show_post</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                    <span class="n">show_comment</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+
+<span class="nd">&#64;route</span><span class="p">(</span><span class="s">'/sign_in'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sign_in_page</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">template</span><span class="p">(</span><span class="s">'templates/sign_in.html'</span><span class="p">,</span>
+                    <span class="n">current_user</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">current_user</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+
+
+<span class="nd">&#64;route</span><span class="p">(</span><span class="s">'/account'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">account_page</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">current_user</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">'&lt;b&gt;No user logged in&lt;/b&gt;'</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">template</span><span class="p">(</span><span class="s">'templates/account.html'</span><span class="p">,</span>
+                        <span class="n">current_user</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">current_user</span><span class="p">,</span>
+                        <span class="n">message</span><span class="o">=</span><span class="n">message</span><span class="p">)</span>
+
+
+<span class="nd">&#64;route</span><span class="p">(</span><span class="s">'/user/&lt;username&gt;'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">user_page</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s">&quot;&lt;b&gt; User '</span><span class="si">%s</span><span class="s">' not found&lt;/b&gt;&quot;</span> <span class="o">%</span> <span class="n">username</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="c"># Show posts from user in url</span>
+
+        <span class="n">linked_author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">template</span><span class="p">(</span><span class="s">'templates/main.html'</span><span class="p">,</span>
+                        <span class="n">current_user</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">current_user</span><span class="p">,</span>
+                        <span class="n">posts</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">linked_author</span><span class="p">),</span>
+                        <span class="n">show_post</span><span class="o">=</span><span class="n">linked_author</span> <span class="o">==</span> <span class="n">models</span><span class="o">.</span><span class="n">current_user</span><span class="p">,</span>
+                        <span class="n">show_comment</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+
+<span class="nd">&#64;route</span><span class="p">(</span><span class="s">'/post/&lt;username&gt;/&lt;title&gt;'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">post_page</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+
+    <span class="c"># show a specific post and its comments</span>
+
+    <span class="n">linked_author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">linked_author</span><span class="p">,</span>
+                               <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">template</span><span class="p">(</span><span class="s">'templates/main.html'</span><span class="p">,</span>
+                    <span class="n">current_user</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">current_user</span><span class="p">,</span> <span class="n">posts</span><span class="o">=</span><span class="p">[</span><span class="n">post</span><span class="p">],</span>
+                    <span class="n">show_post</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">show_comment</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">current_user</span>
+                    <span class="o">!=</span> <span class="bp">None</span><span class="p">)</span>
+</pre>
+<p>Uncomment the line 'import routings' in manage.py, and try running the server again.  You should see a start page with our initial posts and a Sign in button in the corner.  However, if you try to sign in or make a new account you will encounter a &quot;Method Not Allowed&quot; error.  To make this work we will have to tell routing.py what to do with the post requests sent out by the pressing buttons.</p>
+</div>
+<div class="section" id="add-post-handling">
+<h1>Add Post handling</h1>
+<p>Append the following code to routings.py</p>
+<pre class="code python literal-block">
+<span class="c"># Handle Posts ( events sent from HTML templates )</span>
+
+<span class="nd">&#64;post</span><span class="p">(</span><span class="s">'/sign_in'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">sign_in_action</span><span class="p">():</span>
+
+    <span class="c"># Get fields from HTML form</span>
+
+    <span class="n">username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'username'</span><span class="p">)</span>
+    <span class="n">password</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'password'</span><span class="p">)</span>
+    <span class="n">new_username</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'new_username'</span><span class="p">)</span>
+    <span class="n">new_password1</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'new_password1'</span><span class="p">)</span>
+    <span class="n">new_password2</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'new_password2'</span><span class="p">)</span>
+
+    <span class="c"># Do logic for the forms</span>
+
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'button'</span><span class="p">)</span> <span class="o">==</span> <span class="s">'Sign in'</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sign_in_page</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'username not found'</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">linked_author</span> <span class="o">=</span> \
+                <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">password</span> <span class="o">==</span> <span class="n">linked_author</span><span class="o">.</span><span class="n">password</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">sign_in_page</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'incorrect password'</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">models</span><span class="o">.</span><span class="n">current_user</span> <span class="o">=</span> <span class="n">linked_author</span>
+                <span class="n">redirect</span><span class="p">(</span><span class="s">'/'</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">main_page</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="c"># else if request.forms.get(&quot;buton&quot;) == &quot;Create account&quot;</span>
+
+        <span class="k">if</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">new_username</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sign_in_page</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'username taken'</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">new_password1</span> <span class="o">!=</span> <span class="n">new_password2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">sign_in_page</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'passwords do not match'</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">new_username</span><span class="p">,</span>
+                               <span class="n">password</span><span class="o">=</span><span class="n">new_password1</span><span class="p">)</span>
+            <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+            <span class="n">models</span><span class="o">.</span><span class="n">current_user</span> <span class="o">=</span> <span class="n">user</span>
+            <span class="n">redirect</span><span class="p">(</span><span class="s">'/'</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">main_page</span><span class="p">()</span>
+
+
+<span class="nd">&#64;post</span><span class="p">(</span><span class="s">'/account'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">account_page_action</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'button'</span><span class="p">)</span> <span class="o">==</span> <span class="s">'Update info'</span><span class="p">:</span>
+
+        <span class="c"># Get fields from page</span>
+
+        <span class="n">first_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'first_name'</span><span class="p">)</span>
+        <span class="n">last_name</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'last_name'</span><span class="p">)</span>
+        <span class="n">email</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'email'</span><span class="p">)</span>
+        <span class="n">cur_pass</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'current_password'</span><span class="p">)</span>
+        <span class="n">new_pass1</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'new_password1'</span><span class="p">)</span>
+        <span class="n">new_pass2</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'new_password2'</span><span class="p">)</span>
+
+        <span class="c"># Set current_user attributes (except password)</span>
+
+        <span class="n">cur_user</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">current_user</span>
+        <span class="n">cur_user</span><span class="o">.</span><span class="n">first_name</span> <span class="o">=</span> <span class="n">first_name</span>
+        <span class="n">cur_user</span><span class="o">.</span><span class="n">last_name</span> <span class="o">=</span> <span class="n">last_name</span>
+        <span class="n">cur_user</span><span class="o">.</span><span class="n">email</span> <span class="o">=</span> <span class="n">email</span>
+
+        <span class="c"># Set current_user password attribute</span>
+
+        <span class="k">if</span> <span class="n">cur_pass</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">cur_pass</span> <span class="o">==</span> <span class="n">cur_user</span><span class="o">.</span><span class="n">password</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">new_pass1</span> <span class="o">==</span> <span class="n">new_pass2</span><span class="p">:</span>
+                    <span class="n">cur_user</span><span class="o">.</span><span class="n">password</span> <span class="o">=</span> <span class="n">new_pass1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">cur_user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                    <span class="k">return</span> <span class="n">account_page</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'passwords do not match'</span>
+                            <span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">cur_user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+                <span class="k">return</span> <span class="n">account_page</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'incorrect password'</span><span class="p">)</span>
+        <span class="n">cur_user</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">account_page</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'success'</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+
+        <span class="c"># else if request.forms.get(&quot;button&quot;) == &quot;Sign out&quot;</span>
+
+        <span class="n">models</span><span class="o">.</span><span class="n">current_user</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">redirect</span><span class="p">(</span><span class="s">'/'</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">main_page</span><span class="p">()</span>
+
+
+<span class="nd">&#64;post</span><span class="p">(</span><span class="s">'/user/&lt;username&gt;'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">user_page_action</span><span class="p">(</span><span class="n">username</span><span class="p">):</span>
+
+    <span class="c"># handle new post</span>
+
+    <span class="n">post</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Post</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">current_user</span><span class="p">,</span>
+                       <span class="n">title</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'post_title'</span><span class="p">),</span>
+                       <span class="n">content</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'post_content'</span><span class="p">))</span>
+    <span class="n">post</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">user_page</span><span class="p">(</span><span class="n">username</span><span class="p">)</span>
+
+
+<span class="nd">&#64;post</span><span class="p">(</span><span class="s">'/post/&lt;username&gt;/&lt;title&gt;'</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">post_page_action</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">title</span><span class="p">):</span>
+
+    <span class="c"># handle new comment on a post</span>
+
+    <span class="n">linked_author</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="n">username</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="n">post</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">linked_author</span><span class="p">,</span>
+                               <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">Comment</span><span class="p">(</span><span class="n">author</span><span class="o">=</span><span class="n">models</span><span class="o">.</span><span class="n">current_user</span><span class="p">,</span>
+                             <span class="n">content</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">forms</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'comment_area'</span><span class="p">))</span>
+    <span class="n">post</span><span class="o">.</span><span class="n">comments</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">comment</span><span class="p">)</span>
+    <span class="n">post</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">post_page</span><span class="p">(</span><span class="n">username</span><span class="p">,</span> <span class="n">title</span><span class="p">)</span>
+</pre>
+<p>You should now have a fully functional Tumblelog!
+All of the code for this project can be found at <a class="reference external" href="https://github.com/LaineHerron/mytumblesite">https://github.com/LaineHerron/mytumblesite</a></p>
+</div>
+</div>
+</body>
+</html>
